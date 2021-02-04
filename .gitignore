@@ -1,3 +1,19 @@
+# Add stuff here that you don't want to commit
+# extensions to ignore
+*.pyc
+
+
+# files to ignore
+# .gitignore
+
+
+# folders to ignore
+.idea/
+venv_*/
+
+
+
+# Automatically generated .gitignore below this line #
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

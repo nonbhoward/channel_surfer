@@ -62,6 +62,7 @@ class Television:
     @staticmethod
     def _get_file_extension_from_(file_path) -> str:
         try:
+            # TODO the bug is that this is being given a list of folders..
             file_extension = ''
             file_path_contains_delimiter = True if len(str(file_path).split('.')) > 1 else False
             if file_path_contains_delimiter:

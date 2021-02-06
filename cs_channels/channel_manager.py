@@ -36,9 +36,6 @@ class Television:
             all_dirs_recursive = list()
             for root, dirs, files in walk(media_library):
                 if not recursive:
-                    all_dirs_not_recursive = list()
-                    for _dir in dirs:
-                        all_dirs_not_recursive.append(Path(_dir).resolve())
                     return [Path(_dir).resolve() for _dir in dirs]  # surface dirs only
                 for _dir in dirs:
                     all_dirs_recursive.append(Path(root, _dir))

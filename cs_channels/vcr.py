@@ -1,22 +1,12 @@
-from datetime import datetime
-from os import getcwd
+from os import getcwd  # TODO delete if unused outside of debug
 from os import walk
-from pathlib2 import Path
+from pathlib import Path
 
 
-class Television:
-    def __init__(self, minutes_til_shutdown=0, media_library_root=Path(getcwd())):
-        """
-        :param minutes_til_shutdown: if 0, disabled, else, retrieve a datetime to set as a shutdown threshold
-        :param media_library_root: the folder which contains the su-folders containing the media
-        """
-        self.power_on_time = datetime.now()  # used as a reference for resuming channels at a timestamp
-        if minutes_til_shutdown:
-            self.auto_shut_down_time = self._get_auto_shutdown_time()
-        self.channels = dict()
-        self.channels['video'] = dict()
+class VCR:
+    def __init__(self, media_library_root=Path(getcwd()).parent.parent):
         self.supported_file_extensions = ['avi', 'mp4', 'mkv', 'py']
-        self._populate_channels_with_content_from_(media_library_root)
+        self.vhs_tapes = self._get_media_library_from_(media_library_root)
 
     @staticmethod
     def _get_all_folders_in_(media_library=None, recursive=False) -> list:
@@ -30,13 +20,15 @@ class Television:
         :return: list of Path objects
         """
         try:
-            recursive = True # FIXME delete this line
             if media_library is None:
                 raise Exception('no media library provided!')
             all_dirs_recursive = list()
             for root, dirs, files in walk(media_library):
                 if not recursive:
-                    return [Path(_dir).resolve() for _dir in dirs]  # surface dirs only
+                    surface_dirs = list()
+                    for _dir in dirs:
+                        surface_dirs.append(Path(root, _dir).absolute())
+                    return surface_dirs
                 for _dir in dirs:
                     all_dirs_recursive.append(Path(root, _dir))
             return all_dirs_recursive
@@ -48,8 +40,10 @@ class Television:
         try:
             all_files_in_media_directory = list()
             for root, dirs, files in walk(media_directory):
+                surface_files = list()
                 if not recursive:
-                    return [Path(_dir).resolve() for _dir in dirs]
+                    for _dir in dirs:
+                        surface_files.append(Path(root, _dir).absolute())
                 for file in files:
                     all_files_in_media_directory.append(Path(root, file).resolve())
             return all_files_in_media_directory
@@ -68,7 +62,7 @@ class Television:
         except Exception as e_err:
             print(e_err)
 
-    def _populate_channels_with_content_from_(self, media_library: Path) -> dict:
+    def _get_media_library_from_(self, media_library: Path) -> dict:
         try:
             media_library_folders = self._get_all_folders_in_(media_library)
             library_size = 0
@@ -89,21 +83,6 @@ class Television:
         except Exception as e_err:
             print(e_err)
 
-    @staticmethod
-    def _get_auto_shutdown_time() -> datetime:
-        """
-        incomplete function, not implemented
-        :return: it would be when to shutdown
-        """
-        try:
-            time_now = datetime.now()
-            # TODO time_shutdown = time_now - time_to_run
-            return time_now
-        except Exception as e_err:
-            print(e_err)
-
 
 if __name__ == '__main__':
-    root_dir = Path(getcwd()).parent.parent
-    cm = Television(media_library_root=root_dir)  # TODO delete arg
-    pass
+    vcr = VCR()

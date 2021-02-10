@@ -1,10 +1,12 @@
 # Add stuff here that you don't want to commit
 # extensions to ignore
+*.mpg
 *.pyc
 
 
 # files to ignore
 # .gitignore
+*MACHI*
 
 
 # folders to ignore

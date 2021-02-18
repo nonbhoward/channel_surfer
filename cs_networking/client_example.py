@@ -9,7 +9,7 @@ client = NetGear(
     address=CLIENT_IP,
     port=CLIENT_PORT,
     protocol=PROTOCOL,
-    PATTERN=PATTERN,
+    pattern=PATTERN,
     receive_mode=True
 )
 while True:

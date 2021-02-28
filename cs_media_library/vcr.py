@@ -1,3 +1,4 @@
+from cs_media_library.MEDIA_LIB_CONSTANTS import MEDIA_LIB_PATH_NAME
 from os import getcwd  # TODO delete if unused outside of debug
 from os import walk
 from pathlib import Path
@@ -6,6 +7,7 @@ from pathlib import Path
 class VCR:
     def __init__(self, media_library_root=Path(getcwd()).parent.parent):
         self.supported_file_extensions = ['avi', 'mp4', 'mkv', 'py']
+        self.media_library = self._get_media_library_path()
         self.vhs_tapes = self._get_media_library_from_(media_library_root)
 
     def build_content(self):
@@ -89,6 +91,18 @@ class VCR:
         except Exception as e_err:
             print(e_err.args[0])
 
+    @staticmethod
+    def _get_media_library_path() -> Path:
+        try:
+            cwd = Path(getcwd())
+            project_path = cwd.parent
+            project_parent_path = project_path.parent
+            media_library_full_path = Path(project_parent_path, MEDIA_LIB_PATH_NAME)
+            return media_library_full_path
+        except Exception as e_err:
+            print(e_err.args[0])
+
 
 if __name__ == '__main__':
     vcr = VCR()
+    pass

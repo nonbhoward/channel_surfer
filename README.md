@@ -6,7 +6,7 @@
 re-create the vintage television watching experience  
 
 ## media library
-assuming media library is located in a parallel directory to this project
+assuming media library is located in a parallel directory to this project  
     ./../CHANNEL_SURFER_MEDIA/
 
 # modules

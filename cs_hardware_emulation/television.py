@@ -1,12 +1,13 @@
 from datetime import datetime
 from cs_hardware_emulation.remote_receiver import Receiver
+from cs_hardware_emulation.television_helper import get_auto_shutdown_time
 from cs_media_library.vcr import VCR
 import logging
 logger = logging.getLogger(__name__)
 
 
 class Television:
-    def __init__(self, minutes_til_shutdown=0):
+    def __init__(self, minutes_til_shutdown=1):
         logger.debug(f'initializing \'{self.__class__.__name__}\'')
         """
         :param minutes_til_shutdown: if 0, disabled, else, retrieve a datetime to set as a shutdown threshold
@@ -16,7 +17,8 @@ class Television:
         self.active_channel = self._get_startup_channel()
         self.remote_receiver = Receiver()
         if minutes_til_shutdown:
-            self.auto_shut_down_time = self.get_auto_shutdown_time()
+            self.auto_shut_down_time = get_auto_shutdown_time(minutes_til_shutdown)
+        pass
 
     def build_programming(self, channel_data):
         """
@@ -37,19 +39,6 @@ class Television:
                 pass  # TODO change channel down
             else:
                 pass  # TODO other cases
-        except Exception as e_err:
-            print(e_err.args[0])
-
-    @staticmethod
-    def get_auto_shutdown_time() -> datetime:
-        # TODO time_shutdown = time_now - time_to_run
-        """
-        incomplete function, not implemented
-        :return: it would be when to shutdown
-        """
-        try:
-            time_now = datetime.now()
-            return time_now
         except Exception as e_err:
             print(e_err.args[0])
 

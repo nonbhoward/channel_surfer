@@ -11,23 +11,24 @@ assuming media library is located in a parallel directory to this project
 
 # modules
 ## remote_receiver
-1. contains Remote class
-2. has properties for interpreting received remote signal  
+1. TODO
 
 ## television  
 ### functions that share media content  
 1. contains Television class  
-2. change channels  
-3. automatically shuts down (optional)  
-4. manage channels, channels changing, timestamps, etc  
+2. emulate television with a sleep timer..
+..change channels..
+..keep everything in sync..
+..handle receiver input..
+..etc
 
 ## vcr
 ### functions that manage media content
 1. contains VCR class  
-2. extracts video files from media folders  
-3. create channels based on (undecided parameters)  
+2. build channel content from disk
 
 ## cs_networking
 ### functions that allow the client/server to interact and share content
-1. contains Broadcaster class  
-2. communicate client to server  
+0. TODO
+1. contains client example
+2. contains server example

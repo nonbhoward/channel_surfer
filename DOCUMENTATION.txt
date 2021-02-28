@@ -1,6 +1,7 @@
-cs_channels contains modules related to television channel emulation
+cs_hardware_emulation contains modules related to television channel emulation
     remote_receiver.py # TODO is empty because lower priority this early, but could emulate anything related to remote control?
     television.py handles channel info and emulated television behaviors
+cs_media_library contains modules related to organizing the media library and initiatializing channel data
     vcr.py handles video file organization and data
 cs_networking contains modules related to networking
     example_client.py is minimal code for a streaming client

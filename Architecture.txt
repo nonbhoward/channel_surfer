@@ -1,0 +1,86 @@
+Architecture 1:
+*Keep all video on the TV-attached computer, no need for LAN server with videos
+*Control provided by USB IR receiever that is captured by python and interpreted to change which videos are streaming
+*With multi-core machine, could be possible to keep multiple videos buffered in memory allowing fast switching between 'channels'
+*Requires beefier client PC for good performance probably
+*Simpler code
+
+Architecture 2:
+*Keep video on LAN server and have it streamed to client
+*Server provides a single video stream and handles buffering of multiple 'channels'
+*Control comes from client and changes which buffered video is being connected to output stream
+*Client PC can be smaller and cheaper
+*Code is more complex
+
+Hardware:
+Micro-pc (like https://www.amazon.com/Z83-F-Fanless-Silent-Desktop-1-92GHz/dp/B07CJFZ1NL)
+Micro-pc (like https://www.amazon.com/Computer-Windows-x5-Z8350-Support-Bluetooth/dp/B08J2Z16K4)
+USB-IR Receiever (like https://www.amazon.com/Universal-Remote-Control-Receiver-Raspberry/dp/B01NBRBWS6)
+  *Seems that this should work with linux, receiever appears as a keyboard so just need to capture keyboard input
+  
+
+Software Architecture Thoughts:
+In the simplest realization of architecture 1 you just use python to control VLC media player via the VLC python library. When transitioning between channels VLC is simply instructed to open a new video
+file and start playing from a time-stamp. Speed wise this may introduce a delay when changing channels or when a video transistions to an ad video or whatever.
+This is probably fine for a proof of concept.
+
+
+Specific Software Architecture:
+Class Channel:
+  Def Init(Channel_ID)
+    #Channel_ID matches a folder name containing all the files that will be played on this channel
+    #Inside this folder is another folder named "shows" with all the shows of interest in it
+    #There is also a folder named "ads" which containes all the ads that will be played on this channel
+    self.Initialize_Channel()
+  Def Start_Channel()
+    self.start_time = time.time()
+  Def Switch_To_This_Channel
+    #This is called when we want to activate this channel
+    #Returns what video file should be played and at what timestamp we are at
+    #return {"File":File_Location, "Time-stamp":Timestamp}
+  Def Play_This_Channel
+    #Called periodically while this channel is active, probably 2 times per second is fine
+    #Return None if no action needs to be taken
+    #If a new file needs to be played (e.g. and ad is coming up) this returns the file location and timestamp to start at
+    #return {"File":File_Location, "Time-stamp":Timestamp} or None
+  Def Initialize_Channel
+    #Scans all episodes assigned to this channel and extracts their lengths
+    #Scans all ads assigned to this channel and extracts their lengths
+    #Builds a list of actions which contains the relative time when this action occurs, the file that should be switched to, and the timestamp in that file
+    #An example of this list might look like:
+    #[Global_Time_stamp, FileLocation, FileTimestamp]
+    #[[0,ShowEp1.mpeg,0],[320,Ad1.mpeg,0],[380,Ad2.mpeg,0],[440,ShowEp2.mpeg,320],[723,Ad3.mpeg,0],[780,Ad4.mpeg,0],[840,ShowEp2.mpeg,0].. etc]
+  
+Class Player:
+  Def Init()
+    self.Chan1 = Channel(1)
+    self.Chan2 = Channel(2)
+    etc
+  Def Start()
+    self.Chan1.Start_Channel()
+    self.Chan2.Start_Channel()
+  Def Channel_Up()
+    #Some logic keeping track of current channel and figuring out what the next channel is, if we are at max channel roll back ot chan1
+    File,Timestamp = Next_Channel.Switch_To_This_Channel()
+    VLC_Load_File(File, Timestamp)
+  Def Channel_Down()
+    #Same as channel_up
+  Def Check_Channel()
+    #This gets called periodically to catch when we need to switch files due to episode end / ad start
+    Response = Current_Channel.Play_This_Channel()
+    If Response != None:
+      File,Timestamp = Response
+      VLC_Load_File(File, Timestamp)
+        
+ Main Loop:
+   Player = Player()
+   Player.Start()
+   While(True):
+    #If 0.5 seconds has passed
+    Player.Check_Channel()
+    #If we have a "chan_up" command from the IR Receiever
+    Player.Channel_Up()
+    #If we have a "Chan_down" command form the IR Receiever
+    Player.Channel_Down()
+    
+

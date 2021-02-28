@@ -1,0 +1,12 @@
+cs_channels contains modules related to television channel emulation
+    remote_receiver.py # TODO is empty because lower priority this early, but could emulate anything related to remote control?
+    television.py handles channel info and emulated television behaviors
+    vcr.py handles video file organization and data
+cs_networking contains modules related to networking
+    example_client.py is minimal code for a streaming client
+    example_server.py is minimal code for a streaming server
+DOCUMENTATION.txt is what you are reading
+MACHINE_DETAILS.py needs to be modified with your info
+main_loop.py is the entire program in a glancable form
+README.md is a place to start
+requirements.txt pip install -r requirements.txt to automatically install all requirements to your venv

@@ -1,6 +1,6 @@
 from datetime import datetime
 from remote_receiver import Receiver
-from vcr import VCR
+from cs_media_library.vcr import VCR
 
 
 class Television:

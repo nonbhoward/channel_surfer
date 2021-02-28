@@ -1,8 +1,8 @@
 import logging
 logger = logging.getLogger(__name__)
 
-
 MEDIA_LIB_PATH_NAME = 'CHANNEL_SURFER_MEDIA'
+SUPPORTED_FILE_EXTENSIONS = ['avi', 'mp4', 'mkv']
 
 # initialization
 channel_03_content = dict()

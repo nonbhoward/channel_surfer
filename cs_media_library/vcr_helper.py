@@ -1,8 +1,8 @@
 from cs_media_library.MEDIA_LIB_CONSTANTS import MEDIA_LIB_PATH_NAME
+from cs_media_library.MEDIA_LIB_CONSTANTS import SUPPORTED_FILE_EXTENSIONS
 from os import getcwd
 from os import walk
 from pathlib import Path
-
 import logging
 logger = logging.getLogger(__name__)
 
@@ -91,6 +91,13 @@ def get_populated_media_library(media_lib_path) -> dict:
         logging.info(f'populating media library')
         all_media_file_paths = get_all_file_paths_in_(media_lib_path)
         channel_data = dict()
+        for file in all_media_file_paths:
+            ext = get_file_extension_from_(file)
+            if ext in SUPPORTED_FILE_EXTENSIONS:
+                path_to_file = Path(*file.parts[:-1])
+                if path_to_file not in channel_data:
+                    channel_data[path_to_file] = list()
+                channel_data[path_to_file].append(file.parts[-1])
         return channel_data
     except Exception as e_err:
         print(e_err.args[0])

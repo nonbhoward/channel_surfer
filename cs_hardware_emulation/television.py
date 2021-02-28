@@ -26,7 +26,13 @@ class Television:
             else:
                 pass  # TODO other cases
         except Exception as e_err:
-            print(e_err)
+            print(e_err.args[0])
+
+    def play_time_of_day_channel(self):
+        try:
+            print(self)
+        except Exception as e_err:
+            print(e_err.args[0])
 
     @staticmethod
     def _get_auto_shutdown_time() -> datetime:
@@ -39,7 +45,7 @@ class Television:
             time_now = datetime.now()
             return time_now
         except Exception as e_err:
-            print(e_err)
+            print(e_err.args[0])
 
     @staticmethod
     def _get_startup_channel():
@@ -47,7 +53,7 @@ class Television:
         try:
             pass
         except Exception as e_err:
-            print(e_err)
+            print(e_err.args[0])
 
 
 if __name__ == '__main__':

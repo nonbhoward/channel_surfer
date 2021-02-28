@@ -33,7 +33,7 @@ class VCR:
                     all_dirs_recursive.append(Path(root, _dir))
             return all_dirs_recursive
         except Exception as e_err:
-            print(e_err)
+            print(e_err.args[0])
 
     @staticmethod
     def _get_all_file_paths_in_(media_directory=None, recursive=False) -> list:
@@ -48,7 +48,7 @@ class VCR:
                     all_files_in_media_directory.append(Path(root, file).resolve())
             return all_files_in_media_directory
         except Exception as e_err:
-            print(e_err)
+            print(e_err.args[0])
 
     @staticmethod
     def _get_file_extension_from_(file_path) -> str:
@@ -60,7 +60,7 @@ class VCR:
                 file_extension = str(file_path).split('.')[-1]
             return file_extension
         except Exception as e_err:
-            print(e_err)
+            print(e_err.args[0])
 
     def _get_media_library_from_(self, media_library: Path) -> dict:
         try:
@@ -81,7 +81,7 @@ class VCR:
                         media_library_content[media_library_folder].append(file_path)
             return media_library_content
         except Exception as e_err:
-            print(e_err)
+            print(e_err.args[0])
 
 
 if __name__ == '__main__':

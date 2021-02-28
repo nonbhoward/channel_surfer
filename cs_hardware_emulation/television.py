@@ -13,7 +13,6 @@ class Television:
         :param minutes_til_shutdown: if 0, disabled, else, retrieve a datetime to set as a shutdown threshold
         """
         self.power_on_time = datetime.now()  # used as a reference for resuming channels at a timestamp
-        self.player = VCR()
         self.active_channel = self._get_startup_channel()
         self.remote_receiver = Receiver()
         if minutes_til_shutdown:

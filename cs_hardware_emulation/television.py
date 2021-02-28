@@ -30,7 +30,7 @@ class Television:
 
     def play_time_of_day_channel(self):
         try:
-            print(self)
+            pass
         except Exception as e_err:
             print(e_err.args[0])
 

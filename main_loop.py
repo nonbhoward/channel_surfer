@@ -4,6 +4,7 @@ from cs_media_library.vcr import VCR
 
 def main_loop():
     tv, vcr = Television(), VCR()
+    tv.channels = VCR.build_content()
     while True:
         tv.play_time_of_day_channel()
 

@@ -8,6 +8,12 @@ class VCR:
         self.supported_file_extensions = ['avi', 'mp4', 'mkv', 'py']
         self.vhs_tapes = self._get_media_library_from_(media_library_root)
 
+    def build_content(self):
+        try:
+            pass
+        except Exception as e_err:
+            print(e_err.args[0])
+
     @staticmethod
     def _get_all_folders_in_(media_library=None, recursive=False) -> list:
         """

@@ -2,15 +2,18 @@ from cs_media_library.MEDIA_LIB_CONSTANTS import MEDIA_LIB_PATH_NAME
 from os import getcwd  # TODO delete if unused outside of debug
 from os import walk
 from pathlib import Path
+import logging
+logger = logging.getLogger(__name__)
 
 
 class VCR:
     def __init__(self, media_library_root=Path(getcwd()).parent.parent):
         self.supported_file_extensions = ['avi', 'mp4', 'mkv', 'py']
         self.media_library = self._get_media_library_path()
-        self.vhs_tapes = self._get_media_library_from_(media_library_root)
+        self.channel_data = self._get_populated_media_library()
 
-    def build_content(self):
+    @classmethod
+    def fetch_channel_data(cls):
         try:
             pass
         except Exception as e_err:
@@ -99,6 +102,16 @@ class VCR:
             project_parent_path = project_path.parent
             media_library_full_path = Path(project_parent_path, MEDIA_LIB_PATH_NAME)
             return media_library_full_path
+        except Exception as e_err:
+            print(e_err.args[0])
+
+    def _get_populated_media_library(self) -> dict:
+        try:
+            channel_data = dict()
+            for root, dirs, files in walk(self.media_library):
+                for file in files:
+                    pass
+            return channel_data
         except Exception as e_err:
             print(e_err.args[0])
 

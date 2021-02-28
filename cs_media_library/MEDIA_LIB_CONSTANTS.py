@@ -1,3 +1,7 @@
+import logging
+logger = logging.getLogger(__name__)
+
+
 MEDIA_LIB_PATH_NAME = 'CHANNEL_SURFER_MEDIA'
 
 # initialization

@@ -1,6 +1,8 @@
 from datetime import datetime
-from remote_receiver import Receiver
+from cs_hardware_emulation.remote_receiver import Receiver
 from cs_media_library.vcr import VCR
+import logging
+logger = logging.getLogger(__name__)
 
 
 class Television:
@@ -10,7 +12,6 @@ class Television:
         """
         self.power_on_time = datetime.now()  # used as a reference for resuming channels at a timestamp
         self.player = VCR()
-        self.channels = self.player.vhs_tapes
         self.active_channel = self._get_startup_channel()
         self.remote_receiver = Receiver()
         if minutes_til_shutdown:

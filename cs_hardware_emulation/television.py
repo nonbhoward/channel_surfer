@@ -18,6 +18,16 @@ class Television:
         if minutes_til_shutdown:
             self.auto_shut_down_time = self.get_auto_shutdown_time()
 
+    def build_programming(self, channel_data):
+        """
+        use the channel data to build the daily programming
+        :return: None
+        """
+        try:
+            pass
+        except Exception as e_err:
+            print(e_err.args[0])
+
     def change_channel(self, remote_signal):
         # FIXME what 'event' triggers a change channel call?
         try:

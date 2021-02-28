@@ -38,7 +38,7 @@ class Television:
             elif remote_signal == self.remote_receiver.CHANNEL_DOWN:
                 pass  # TODO change channel down
             else:
-                pass  # TODO other cases
+                pass  # TODO other
         except Exception as e_err:
             print(e_err.args[0])
 
@@ -46,6 +46,7 @@ class Television:
         try:
             logging.info(f'playing time of day channel')
             startup_channel = self._get_startup_channel()
+            # TODO
         except Exception as e_err:
             print(e_err.args[0])
 

@@ -71,8 +71,7 @@ def get_file_extension_from_(file_path) -> str:
 def get_media_library_path() -> Path:
     try:
         logging.info(f'getting media library path')
-        cwd = Path(getcwd())
-        project_path = cwd.parent
+        project_path = Path(getcwd())
         project_parent_path = project_path.parent
         media_library_full_path = Path(project_parent_path, MEDIA_LIB_PATH_NAME)
         logging.info(f'media library full path is \'{media_library_full_path.absolute()}\'')
@@ -83,12 +82,15 @@ def get_media_library_path() -> Path:
 
 
 def get_populated_media_library(media_lib_path) -> dict:
+    """
+    # FIXME entry point for VCR
+    :param media_lib_path:
+    :return:
+    """
     try:
         logging.info(f'populating media library')
+        all_media_file_paths = get_all_file_paths_in_(media_lib_path)
         channel_data = dict()
-        for root, dirs, files in walk(media_lib_path):
-            for file in files:
-                pass
         return channel_data
     except Exception as e_err:
         print(e_err.args[0])

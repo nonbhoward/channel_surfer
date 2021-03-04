@@ -6,7 +6,7 @@
 
 # files to ignore
 # .gitignore
-# *MACHI*
+*MACHI*
 CHANNEL*
 
 

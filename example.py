@@ -4,7 +4,7 @@ import time
 #Place your shows under channels/example_channel/shows
 #Place your ads under channels/example_channel/ads
 #Acceptable video types are .mp4, .avi, .mkv currently
-channel_list=["example_channel"]#names in this list must match your folder names under channels/
+channel_list=["example_channel1, example_channel2"]#names in this list must match your folder names under channels/
 player = TVPlayer_local(channel_list)
 playlist_file, schedule, seek_info = player.initialize() #Builds the channel schedule and saves the playlist file
 player.start() #Opens VLC and begins the stream

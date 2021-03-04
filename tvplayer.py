@@ -5,8 +5,13 @@ import random
 import math
 import time
 
-class TVPlayer:
+class TVPlayer_local:
     def __init__(self, channel_list):
+        '''
+        Creates instance of a local VLC powered fake TV station
+        Pass a list of all channel names of interest. These names must match folders
+        located underneath a channels/ folder in the execution directory
+        '''
         self.channel_list = channel_list
         self.channel_index=0
         self.video_extensions = [".mp4",".avi",".mkv"]
@@ -15,8 +20,12 @@ class TVPlayer:
         self.playlist=""
         self.vlc_telnet = Telnet()
         self.player_start_time = 0
+        self.playlist_index_offset = 4 #VLC is stupid and confuses the playlist indexes
         
     def get_video_list(self, foldername):
+        '''
+        get all acceptable videos from the folder
+        '''
         file_list= os.listdir(foldername)
         video_list=[]
         for extension in self.video_extensions:
@@ -26,6 +35,9 @@ class TVPlayer:
         return video_list
     
     def get_video_lengths(self, video_list):
+        '''
+        finds the length of each video file
+        '''
         results = []
         for video in video_list:
             try:
@@ -40,8 +52,11 @@ class TVPlayer:
         return results
     
     def build_channel_schedule(self,ads,shows):
+        '''
+        builds the schedule for this channel by inserting ads and shows randomly
+        '''
         show_section_length = (8*60) #8 minutes of show
-        min_section_length = (5*60) #Will not creature show sections less than 5 minutes
+        min_section_length = (5*60) #Will not create show sections less than 5 minutes
         ad_section_count = 2 #number of ads per show section
         random.shuffle(shows)
         schedule=[]
@@ -74,6 +89,10 @@ class TVPlayer:
         return schedule
     
     def build_playlist_and_update_schedule(self,schedule_info):
+        '''
+        constructs the syntax of the vlc playlist file and updates our schedule dict with
+        the resulting indexes
+        '''
         playlist_index=0
         playlist_info={}
         playlist="#EXTM3U\n"
@@ -132,7 +151,7 @@ class TVPlayer:
     
     def vlc_seek(self,seconds):
         self.vlc_telnet.open("localhost",1234)
-        self.vlc_telnet.write(str("seek "+str(seconds)+"\n\r").encode('utf-8'))
+        self.vlc_telnet.write(str("seek "+str(int(seconds))+"\n\r").encode('utf-8'))
         self.vlc_telnet.close()
         
     def vlc_choose_index(self,index):
@@ -169,11 +188,16 @@ class TVPlayer:
         self.vlc_shutdown()
     
     def change_channel(self, channel_index):
+        '''
+        switches to the channel indicated by channel_index
+        after switching, seeks to correct time within that channel
+        '''
+        if channel_index not in self.seek_info.keys():
+            return
         channel_runtime = self.seek_info[channel_index]["run_time"]
         channel_sections = self.seek_info[channel_index]["channel_sections"]
         channel_time_offset = (time.time()-self.player_start_time)%channel_runtime
         target_playlist_index = channel_sections[0]["playlist_index"]
-        print("Offset:"+str(channel_time_offset))
         seek_distance=0
         #search all video timestamps to find the playlist entry where we should currently be
         for video_index, section in enumerate(channel_sections):
@@ -181,15 +205,12 @@ class TVPlayer:
             #print("ET:"+str(section["stop_time_abs"]))
             if( section["start_time_abs"]<channel_time_offset and
                    section["stop_time_abs"]>channel_time_offset):
-                print("found index at:"+str(video_index))
                 #this is our playlist entry that we should currently be playing
                 target_playlist_index = section["playlist_index"]
                 seek_distance = (channel_time_offset-section["start_time_abs"])+section["start_time_rel"] 
                 break
-        print("seeking:"+str(seek_distance))
-        print("chosen index:"+str(target_playlist_index))
-        self.vlc_choose_index(target_playlist_index)
-        time.sleep(0.25)
+        self.vlc_choose_index(target_playlist_index+self.playlist_index_offset)
+        time.sleep(0.5)
         self.vlc_seek(seek_distance)
         
     def channel_up(self):

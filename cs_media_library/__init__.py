@@ -3,6 +3,7 @@ print(f'configuring logger')
 logging.basicConfig(filename='event.log',
                     filemode='a',
                     format='%(asctime)s, '
+                           '%(levelname)s, '
                            '%(module)s, '
                            '%(funcName)s, '
                            '%(lineno)d, '

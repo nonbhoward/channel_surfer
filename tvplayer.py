@@ -14,6 +14,7 @@ class TVPlayer:
         self.seek_info={}
         self.playlist=""
         self.vlc_telnet = Telnet()
+        self.player_start_time = 0
         
     def get_video_list(self, foldername):
         file_list= os.listdir(foldername)
@@ -90,27 +91,36 @@ class TVPlayer:
         return playlist
     
     def build_seek_info(self,schedule_info):
+        '''
+        builds a large dict that contains all information about player show schedule
+        includes the total runtime of channel, absolute start and stop times,
+        relative stop and start times and video index in VLC playlist
+        schedule info = {channel_index:{runtime:runtime, channel_sections:[section]}}
+        section = {start_time_abs, start_time_rel, stop_time_abs, stop_time_rel, playlist_index}
+        '''
         seek_info={}
         for channel_index in schedule_info.keys():
-            total_run_time=0
-            video_start_time=0
-            seek_info[channel_index]={"run_time":0,"time_stamps":[]}
-            for video in schedule_info[channel_index]:
-                video_timestamp = {}
-                video_timestamp["index"]=video["index"]
-                video_timestamp["start_time"]=video_start_time
-                video_runtime=0
-                if video["stop_time"]=="EOV":
-                    total_run_time += video["video_length"]-video["start_time"]
-                    video_runtime=video["video_length"]-video["start_time"]
+            channel_run_time=0
+            section_start_time_abs=0
+            seek_info[channel_index]={"run_time":0,"channel_sections":[]}
+            for section in schedule_info[channel_index]:
+                section_info = {}
+                section_info["playlist_index"]=section["index"]
+                section_info["start_time_abs"]=section_start_time_abs
+                section_info["start_time_rel"]=section["start_time"]
+                section_run_time=0
+                if section["stop_time"]=="EOV":
+                    channel_run_time += section["video_length"]-section["start_time"]
+                    section_run_time = section["video_length"]-section["start_time"]
                 else:
-                    total_run_time += video["stop_time"]-video["start_time"]
-                    video_runtime = video["stop_time"]-video["start_time"]
-                video_timestamp["stop_time"]=video_start_time+video_runtime
-                video_timestamp["video_length"]=video["video_length"]
-                video_start_time=video_start_time+video_runtime
-                seek_info[channel_index]["time_stamps"].append(video_timestamp)
-            seek_info[channel_index]["run_time"]=total_run_time           
+                    channel_run_time += section["stop_time"]-section["start_time"]
+                    section_run_time = section["stop_time"]-section["start_time"]
+                section_info["stop_time_abs"]=section_start_time_abs+section_run_time
+                section_info["stop_time_rel"]=section["start_time"]+section_run_time
+                section_info["video_length"]=section["video_length"]
+                section_start_time_abs=section_start_time_abs+section_run_time
+                seek_info[channel_index]["channel_sections"].append(section_info)
+            seek_info[channel_index]["run_time"]=channel_run_time           
         return seek_info
     
     def write_playlist(self,playlist):
@@ -153,34 +163,34 @@ class TVPlayer:
     def start(self):
         self.vlc_process=os.system("vlc --no-fullscreen --no-video-on-top --no-random --no-autoscale -I rc --rc-host localhost:1234 playlist.m3u &")
         print("started")
-        self.start_time = time.time()
+        self.player_start_time = time.time()
     
     def stop(self):
         self.vlc_shutdown()
     
-    def change_channel2(self, channel_index):
-        channel_runtime = self.seek_info[channel_index]["run_time"]
-        channel_timestamps = self.seek_info[channel_index]["time_stamps"]
-        channel_time_offset = (time.time()-self.start_time)%channel_runtime
-        target_playlist_index = channel_timestamps[0]["index"]
-        target_video_index = 0
-        for video_index,video_timestamp in enumerate(channel_timestamps):
-            if(video_timestamp["start_time"]>channel_time_offset and
-                  video_timestamp["stop_time"]<channel_time_offset):
-                target_playlist_index=video_timestamp["index"]
-                target_video_index = video_index
-        seek_distance = channel_time_offset - channel_timestamps[target_video_index]["start_time"] 
-        self.vlc_choose_index(target_playlist_index)
-        self.vlc_seek(seek_distance)
-        
     def change_channel(self, channel_index):
-        channel_time_offset = time.time()-self.start_time
-        total_seek_time = 0
-        for prev_chan_index in range(0,channel_index):
-            total_seek_time += self.seek_info[prev_chan_index]["run_time"]
-        total_seek_time += channel_time_offset
-        self.vlc_seek(seek_distance)        
-        time.sleep(0.5)
+        channel_runtime = self.seek_info[channel_index]["run_time"]
+        channel_sections = self.seek_info[channel_index]["channel_sections"]
+        channel_time_offset = (time.time()-self.player_start_time)%channel_runtime
+        target_playlist_index = channel_sections[0]["playlist_index"]
+        print("Offset:"+str(channel_time_offset))
+        seek_distance=0
+        #search all video timestamps to find the playlist entry where we should currently be
+        for video_index, section in enumerate(channel_sections):
+            #print("ST:"+str(section["start_time_abs"]))
+            #print("ET:"+str(section["stop_time_abs"]))
+            if( section["start_time_abs"]<channel_time_offset and
+                   section["stop_time_abs"]>channel_time_offset):
+                print("found index at:"+str(video_index))
+                #this is our playlist entry that we should currently be playing
+                target_playlist_index = section["playlist_index"]
+                seek_distance = (channel_time_offset-section["start_time_abs"])+section["start_time_rel"] 
+                break
+        print("seeking:"+str(seek_distance))
+        print("chosen index:"+str(target_playlist_index))
+        self.vlc_choose_index(target_playlist_index)
+        time.sleep(0.25)
+        self.vlc_seek(seek_distance)
         
     def channel_up(self):
         self.channel_index += 1

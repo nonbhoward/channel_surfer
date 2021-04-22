@@ -111,11 +111,8 @@ class Channel:
 
 
 class Schedule:
-    def __init__(self,
-                 int_key:               int,
-                 channel_info:          Channel):
-        self._info = {
-            int_key:                    channel_info}
+    def __init__(self):
+        self._info = {}
 
     @property
     def channels(self):

@@ -115,8 +115,7 @@ class Schedule:
                  int_key:               int,
                  channel_info:          Channel):
         self._info = {
-            int_key:                    channel_info
-        }
+            int_key:                    channel_info}
 
     @property
     def channels(self):

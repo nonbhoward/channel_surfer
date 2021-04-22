@@ -125,6 +125,11 @@ class Schedule:
     def channels(self, value: Tuple[int, Channel]):
         value_for_channel_integer, value_for_channel = value
         if isinstance(value_for_channel_integer, int) and isinstance(value_for_channel, Channel):
-            self._info[value_for_channel_integer] = value_for_channel
+            try:
+                self._info[value_for_channel_integer] = value_for_channel
+            except KeyError as k_err:
+                for arg in k_err.args:
+                    print(arg)
+                raise k_err
             return
         raise TypeError(f'Schedule.channel should be a Tuple[int, Channel]')
